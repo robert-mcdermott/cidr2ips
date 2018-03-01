@@ -39,13 +39,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	// slice to hold all IP addresses to scan
-	//ips := make([]string, 0)
-
+	// regex to match valid CIDR patterns
 	r, _ := regexp.Compile("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.)" +
 		"{3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/" +
 		"([0-9]|[1-2][0-9]|3[0-2]))$")
 
+	// check to see if the provider CIDR is valid and if not provide error and exit
 	match := r.MatchString(*cidrFlag)
 	if !match {
 		fmt.Fprintf(os.Stderr, "\ninvalid network CIDR: %s\n\n", *cidrFlag)
@@ -53,10 +52,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	// range of IP addresses to scan provided
+	//
 	ips, err := hosts(*cidrFlag)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, err.Error() + "\n\n")
+		fmt.Fprintf(os.Stderr, err.Error()+"\n\n")
 	}
 
 	// shuffle the order of IP addresses if requested (--random)
@@ -64,11 +63,13 @@ func main() {
 		shuffleIPs(ips)
 	}
 
+	// print the IP addresses in the CIDR range to stdout
 	for _, ip := range ips {
 		fmt.Println(ip)
 	}
 }
 
+// increment the IP address by 1
 func inc(ip net.IP) {
 	for j := len(ip) - 1; j >= 0; j-- {
 		ip[j]++
@@ -87,7 +88,8 @@ func shuffleIPs(slice []string) {
 	}
 }
 
-// hosts takes cidr string provided by -ip flag and return a slide of all IP addressees in the range
+// hosts takes cidr string provided by --cidr flag and returns a slice of all IP addressees in the range
+// minus the network number and broadcast address of the provided cidr
 func hosts(cidr string) ([]string, error) {
 	ip, ipnet, err := net.ParseCIDR(cidr)
 	if err != nil {
