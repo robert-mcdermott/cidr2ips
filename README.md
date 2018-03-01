@@ -1,4 +1,5 @@
 # cidr2ips - CIDR to IP list 
+[![Go Report Card](https://goreportcard.com/badge/github.com/robert-mcdermott/cidr2ips)](https://goreportcard.com/report/github.com/robert-mcdermott/cidr2ips)
 
 This utility takes a network CIDR range (192.168.0.0/16) and expands it to a list of IP addresses that are printed to standard out, one IP per line. By default the IP addresses are printed sequentially, but if you would like to randomize the output you can use the --randomize flag.
 
