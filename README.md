@@ -10,17 +10,21 @@ Usage: ./cidr2ips [--randomize] --cidr <cidr-block>
 
 Example: ./cidr2ips --cidr 172.17.24.0/24 --randomize
 
-  -cidr string
+  --cidr string
     
         Required: CIDR block (ex: 192.168.0.0/16) to expand to a list of IP addresses
     
-  -help
+  --help
     
         Print usage information
     
-  -randomize
+  --randomize
     
         Optional: randomize the order of the IP addresses provided as output
+
+  --full
+
+        Optional: provide the network and broadcast addresses in the output; by default only usable addresses are included
 ```
 
 

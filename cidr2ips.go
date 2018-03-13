@@ -15,6 +15,7 @@ func main() {
 	// define and set default command parameter flags
 	var cidrFlag = flag.String("cidr", "", "\nRequired: CIDR block (ex: 192.168.0.0/16) to expand to a list of IP addresses\n")
 	var randFlag = flag.Bool("randomize", false, "\nOptional: randomize the order of the IP addresses provided as output\n")
+	var fullFlag = flag.Bool("full", false, "\nOptional: provide the network and broadcast addresses in the output; by default only usable addresses are included\n")
 	var hFlag = flag.Bool("help", false, "\nPrint usage information\n")
 
 	// usage function that's executed if a required flag is missing or user asks for help (-h)
@@ -53,7 +54,7 @@ func main() {
 	}
 
 	//
-	ips, err := hosts(*cidrFlag)
+	ips, err := hosts(*cidrFlag, *fullFlag)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, err.Error()+"\n\n")
 	}
@@ -90,7 +91,7 @@ func shuffleIPs(slice []string) {
 
 // hosts takes cidr string provided by --cidr flag and returns a slice of all IP addressees in the range
 // minus the network number and broadcast address of the provided cidr
-func hosts(cidr string) ([]string, error) {
+func hosts(cidr string, fullFlag bool) ([]string, error) {
 	ip, ipnet, err := net.ParseCIDR(cidr)
 	if err != nil {
 		return nil, err
@@ -99,6 +100,11 @@ func hosts(cidr string) ([]string, error) {
 	var ips []string
 	for ip := ip.Mask(ipnet.Mask); ipnet.Contains(ip); inc(ip) {
 		ips = append(ips, ip.String())
+	}
+
+	if fullFlag == true {
+		// include network and broadcast addresses
+		return ips, nil
 	}
 	// remove network address and broadcast address
 	return ips[1 : len(ips)-1], nil
